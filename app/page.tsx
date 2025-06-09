@@ -1,13 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { ethers } from "ethers";
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Sparkles, Moon, Star, Eye } from "lucide-react"
 import { getRandomCards } from '../lib/utils'
 import { getTarotReadingFromGemini } from '../lib/geminiApi'
 
-const dummyWalletData = {
+let dummyWalletData = { // Made it a let to update address
   address: '0xABCD...',
   balance: 0.72,
   nftCount: 3
@@ -26,14 +27,43 @@ interface Reading {
 
 export default function CosmicWalletTarot() {
   const [isConnected, setIsConnected] = useState(false)
+  const [walletAddress, setWalletAddress] = useState("");
+  const [error, setError] = useState("");
   const [showReading, setShowReading] = useState(true)
   const [selectedCards, setSelectedCards] = useState<TarotCard[]>([]);
   const [reading, setReading] = useState<Reading | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleConnect = async () => {
-    setIsConnected(true);
-    await handleDrawCards();
+    if (typeof window.ethereum !== "undefined") {
+      try {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        const signer = await provider.getSigner();
+        const address = await signer.getAddress();
+        setWalletAddress(address);
+        setIsConnected(true);
+        setError(""); // Clear previous errors
+
+        // Update dummyWalletData with the connected address
+        dummyWalletData = {
+          ...dummyWalletData,
+          address: address,
+        };
+
+        await handleDrawCards(); // Proceed with drawing cards
+      } catch (err: any) {
+        console.error("User denied account access or error occurred:", err);
+        setError(
+          "Failed to connect wallet. User denied access or an error occurred."
+        );
+        setIsConnected(false);
+      }
+    } else {
+      console.log("MetaMask not installed");
+      setError("MetaMask is not installed. Please install it to connect.");
+      setIsConnected(false);
+    }
   };
 
   const handleNewReading = () => {
@@ -42,14 +72,17 @@ export default function CosmicWalletTarot() {
 
   const handleDrawCards = async () => {
     setIsLoading(true);
+    setError(""); // Clear previous errors
+    setReading(null); // Clear previous reading
     try {
       const cards = getRandomCards();
       setSelectedCards(cards);
       const readingResponse = await getTarotReadingFromGemini(cards, dummyWalletData);
       setReading(readingResponse);
-    } catch (error) {
-      console.error("Error fetching tarot reading:", error);
+    } catch (err: any) { // Changed to err: any for consistency and to access message
+      console.error("Error fetching tarot reading:", err);
       setReading(null);
+      setError(err.message || "An error occurred while fetching your tarot reading.");
     } finally {
       setIsLoading(false);
     }
@@ -90,11 +123,30 @@ export default function CosmicWalletTarot() {
             </Button>
           ) : (
             <div className="text-purple-300 text-lg">
-              <Eye className="w-6 h-6 inline mr-2" />
-              {isLoading ? "Loading reading..." : "Your cosmic energy is awakening..."}
+              {isLoading ? (
+                <>
+                  <Eye className="w-6 h-6 inline mr-2 animate-pulse" />
+                  Loading reading...
+                </>
+              ) : walletAddress ? (
+                <div className="text-center">
+                  <p className="text-xl font-semibold break-all">Connected: {walletAddress}</p>
+                </div>
+              ) : (
+                <>
+                  <Eye className="w-6 h-6 inline mr-2" />
+                  Your cosmic energy is awakening...
+                </>
+              )}
             </div>
           )}
         </div>
+
+        {error && (
+          <div className="mt-4 text-red-400 bg-red-900/50 p-3 rounded-md max-w-md mx-auto">
+            <p>{error}</p>
+          </div>
+        )}
 
         {/* Floating Tarot Card Preview */}
         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
