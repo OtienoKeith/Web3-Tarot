@@ -1,0 +1,196 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-poppins), sans-serif;
+  }
+}
+
+@layer utilities {
+  .font-serif {
+    font-family: var(--font-playfair), serif;
+  }
+
+  .font-script {
+    font-family: var(--font-dancing), cursive;
+  }
+
+  .font-sans {
+    font-family: var(--font-poppins), sans-serif;
+  }
+
+  .glow-text {
+    text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+  }
+
+  /* Floating animation */
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-10px) rotate(2deg);
+    }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* Reading card animation */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .reading-card {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+  }
+
+  /* Stars background */
+  .stars {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .stars::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+      radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.8), transparent),
+      radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+      radial-gradient(1px 1px at 130px 80px, rgba(255, 255, 255, 0.6), transparent),
+      radial-gradient(2px 2px at 160px 30px, #ddd, transparent);
+    background-repeat: repeat;
+    background-size: 200px 100px;
+    animation: sparkle 20s linear infinite;
+  }
+
+  @keyframes sparkle {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-200px);
+    }
+  }
+
+  /* Floating particles */
+  .floating-particles::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(1px 1px at 25px 25px, rgba(168, 85, 247, 0.4), transparent),
+      radial-gradient(1px 1px at 75px 75px, rgba(251, 191, 36, 0.3), transparent),
+      radial-gradient(1px 1px at 125px 125px, rgba(168, 85, 247, 0.2), transparent);
+    background-size: 150px 150px;
+    animation: float-particles 25s linear infinite;
+  }
+
+  @keyframes float-particles {
+    0% {
+      transform: translateY(100vh) translateX(0);
+    }
+    100% {
+      transform: translateY(-100px) translateX(100px);
+    }
+  }
+
+  /* Mystic flickering effect - Fixed for visibility */
+  @keyframes mystic-flicker {
+    0%,
+    100% {
+      opacity: 1;
+      text-shadow: 0 0 5px rgba(251, 191, 36, 0.3), 0 0 10px rgba(168, 85, 247, 0.2), 0 0 15px rgba(255, 255, 255, 0.1);
+    }
+    25% {
+      opacity: 0.95;
+      text-shadow: 0 0 10px rgba(251, 191, 36, 0.5), 0 0 20px rgba(168, 85, 247, 0.3), 0 0 25px rgba(255, 255, 255, 0.2);
+    }
+    50% {
+      opacity: 0.98;
+      text-shadow: 0 0 15px rgba(251, 191, 36, 0.4), 0 0 25px rgba(168, 85, 247, 0.2), 0 0 30px
+        rgba(255, 255, 255, 0.15);
+    }
+    75% {
+      opacity: 0.92;
+      text-shadow: 0 0 8px rgba(251, 191, 36, 0.6), 0 0 15px rgba(168, 85, 247, 0.4), 0 0 20px rgba(255, 255, 255, 0.25);
+    }
+  }
+
+  .mystic-flicker {
+    animation: mystic-flicker 4s ease-in-out infinite;
+    display: inline-block;
+    /* Ensure base visibility */
+    color: transparent;
+    background: linear-gradient(45deg, #d8b4fe, #fbbf24, #d8b4fe);
+    background-clip: text;
+    -webkit-background-clip: text;
+    background-size: 200% 200%;
+    animation: mystic-flicker 4s ease-in-out infinite, gradient-shift 6s ease-in-out infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+}
